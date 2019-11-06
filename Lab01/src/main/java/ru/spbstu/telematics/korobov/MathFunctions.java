@@ -12,6 +12,7 @@ public class MathFunctions {
         for (int i = 0; i < v1.getDimension(); ++i) {
             value += v1.getEntry(i) * v2.getEntry(i);
         }
+
         return value;
     }
 }
