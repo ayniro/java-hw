@@ -1,3 +1,15 @@
+# User files
+/*/.idea/
+
+# Target
+/*/target/
+
+# Eclipse file
+*.eml
+
+# Intellij file
+*.iml
+
 # Compiled class file
 *.class
 
