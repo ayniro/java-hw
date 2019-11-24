@@ -1,8 +1,8 @@
-package ru.spbstu.telematics.korobov;
+package ru.spbstu.telematics.korobov.lab01;
 
 import org.apache.commons.math3.linear.RealVector;
 
-public class MathFunctions {
+class MathFunctions {
     static double dotProduct(RealVector v1, RealVector v2) {
         if (v1.getDimension() != v2.getDimension()) {
             throw new RuntimeException("Vector sizes are not equal");
