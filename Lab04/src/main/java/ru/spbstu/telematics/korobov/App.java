@@ -9,7 +9,7 @@ public class App
     public static void main( String[] args )
     {
         int totalTries = 2000000000;
-        int threadsCount = 4;
+        int threadsCount = 160;
 
         System.out.println(Runtime.getRuntime().availableProcessors());
 
