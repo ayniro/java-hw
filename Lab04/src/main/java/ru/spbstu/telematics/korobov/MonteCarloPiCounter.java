@@ -23,7 +23,6 @@ public class MonteCarloPiCounter extends Thread {
                 outOfCircle++;
             }
         }
-        System.out.println("Thread " + getName() + " has finished");
     }
 
     public int getInCircle() {

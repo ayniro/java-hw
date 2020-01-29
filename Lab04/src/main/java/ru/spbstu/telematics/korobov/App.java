@@ -1,55 +1,52 @@
 package ru.spbstu.telematics.korobov;
 
-/**
- * Hello world!
- *
- */
+
 public class App 
 {
     public static void main( String[] args )
     {
-        int totalTries = 2000000000;
-        int threadsCount = 160;
+        int totalTries = 200000000;
+        int[] threadsCountArray = {1, 2, 4, 8, 16, 32, 64, 128, 1024, 4096};
 
-        System.out.println(Runtime.getRuntime().availableProcessors());
+        for (int threadsCount : threadsCountArray) {
 
-        long start = System.currentTimeMillis();
+            System.out.println(threadsCount + " threads:");
 
-        MonteCarloPiCounter[] counters = new MonteCarloPiCounter[threadsCount];
+            System.out.println(Runtime.getRuntime().availableProcessors());
 
-        for (int i = 0; i < threadsCount; ++i) {
-            counters[i] = new MonteCarloPiCounter(totalTries / threadsCount);
-        }
+            long start = System.currentTimeMillis();
 
-        for (int i = 1; i < threadsCount; ++i) {
-            counters[i].start();
-        }
-        counters[0].run();
+            MonteCarloPiCounter[] counters = new MonteCarloPiCounter[threadsCount];
 
-        try {
-            for (int i = 1; i < threadsCount; ++i) {
-                counters[i].join();
+            for (int i = 0; i < threadsCount; ++i) {
+                counters[i] = new MonteCarloPiCounter(totalTries / threadsCount);
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+            for (int i = 1; i < threadsCount; ++i) {
+                counters[i].start();
+            }
+            counters[0].run();
+
+            try {
+                for (int i = 1; i < threadsCount; ++i) {
+                    counters[i].join();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            long timeConsumed = System.currentTimeMillis() - start;
+
+            int totalInCircle = 0;
+            int total = 0;
+            for (int i = 0; i < counters.length; ++i) {
+                totalInCircle += counters[i].getInCircle();
+                total += counters[i].getTries();
+            }
+
+            System.out.println("Estimated pi value: " + ((double) totalInCircle) / total * 4);
+            System.out.println("Time taken: " + timeConsumed + " ms");
+            System.out.println();
         }
-
-        long timeConsumed = System.currentTimeMillis() - start;
-
-        int totalInCircle = 0;
-        int total = 0;
-        for (int i = 0; i < counters.length; ++i) {
-            totalInCircle += counters[i].getInCircle();
-            total += counters[i].getTries();
-            System.out.println(
-                    counters[i].getCounterName() +
-                            ": In circle: " +
-                            counters[i].getInCircle() +
-                            " Out of circle: " +
-                            counters[i].getOutOfCircle());
-        }
-
-        System.out.println("Estimated pi value: " + ((double)totalInCircle) / total * 4);
-        System.out.println("Time taken: " + timeConsumed + " ms");
     }
 }
