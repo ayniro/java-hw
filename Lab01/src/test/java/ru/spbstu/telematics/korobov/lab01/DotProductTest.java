@@ -11,9 +11,9 @@ import java.util.Random;
 
 import static ru.spbstu.telematics.korobov.lab01.MathFunctions.dotProduct;
 
-public class AppTest {
+public class DotProductTest {
     private static final Random random = new Random();
-    private static final double DOUBLE_COMPARE_EPSILON = 1e-7;
+    private static final double DOUBLE_COMPARE_EPSILON = 1e-10;
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
@@ -43,7 +43,7 @@ public class AppTest {
             RealVector v1 = new ArrayRealVector(firstSize);
             RealVector v2 = new ArrayRealVector(secondSize);
 
-            expectedException.expect(RuntimeException.class);
+            expectedException.expect(IllegalArgumentException.class);
             dotProduct(v1, v2);
         }
     }

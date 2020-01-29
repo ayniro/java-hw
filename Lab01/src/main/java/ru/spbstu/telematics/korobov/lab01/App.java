@@ -10,19 +10,18 @@ public class App {
     private static final Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
-        System.out.println("Code is in MathFunctions.java");
         System.out.println("Enter vectors' dimension:");
         int vectorsSize = -1;
 
         while (vectorsSize < 0) {
             while (!sc.hasNextInt()) {
                 sc.nextLine();
-                System.out.println("Enter positive integer value!!1!");
+                System.out.println("Enter positive integer value.");
             }
             vectorsSize = sc.nextInt();
             sc.nextLine();
             if (vectorsSize < 0) {
-                System.out.println("Incorrect vector size!!1!");
+                System.out.println("Incorrect vector size.");
             }
         }
 
@@ -47,7 +46,7 @@ public class App {
         while (valuesFilled < v.getDimension()) {
             while (!sc.hasNextDouble()) {
                 sc.nextLine();
-                System.out.println("Enter double value!!1!");
+                System.out.println("Enter double value");
             }
             v.setEntry(valuesFilled++, sc.nextDouble());
         }
