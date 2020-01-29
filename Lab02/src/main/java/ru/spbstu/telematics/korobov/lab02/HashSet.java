@@ -129,7 +129,7 @@ public class HashSet<T> implements Iterable<T> {
             return false;
         }
 
-        var oldEntries = new Object[size];
+        Object[] oldEntries = new Object[size];
         for (int i = 0, k = 0; i < entries.length; ++i)
         {
             if (entries[i] != null) {
