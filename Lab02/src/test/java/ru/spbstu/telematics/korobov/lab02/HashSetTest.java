@@ -6,8 +6,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class HashSetTest
-{
+public class HashSetTest {
     static class IntPair {
         int a;
         int b;

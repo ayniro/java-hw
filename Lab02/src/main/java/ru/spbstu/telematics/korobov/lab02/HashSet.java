@@ -45,10 +45,8 @@ public class HashSet<T> implements Iterable<T> {
         int keyHashCode = Objects.hashCode(item);
         int hashIndex = getElementIndex(keyHashCode, iteration++);
 
-        while (isDeleted[hashIndex] || entries[hashIndex] != null)
-        {
-            if (entries[hashIndex] != null)
-            {
+        while (isDeleted[hashIndex] || entries[hashIndex] != null) {
+            if (entries[hashIndex] != null) {
                 Node<?> currNode = (Node<?>)entries[hashIndex];
                 if (Objects.equals(currNode.key, item)) {
                     return !isDeleted[hashIndex];
@@ -65,19 +63,16 @@ public class HashSet<T> implements Iterable<T> {
         int keyHashCode = Objects.hashCode(item);
         int hashIndex = getElementIndex(keyHashCode, iteration++);
 
-        while (!isDeleted[hashIndex] && entries[hashIndex] != null && !Objects.equals(((Node<?>)entries[hashIndex]).key, item))
-        {
+        while (!isDeleted[hashIndex] && entries[hashIndex] != null && !Objects.equals(((Node<?>)entries[hashIndex]).key, item)) {
             hashIndex = getElementIndex(keyHashCode, iteration++);
         }
 
-        if (isDeleted[hashIndex] || entries[hashIndex] == null)
-        {
+        if (isDeleted[hashIndex] || entries[hashIndex] == null) {
             size++;
             entries[hashIndex] = new Node<T>(item);
             isDeleted[hashIndex] = false;
 
-            if (size > capacity * loadFactor)
-            {
+            if (size > capacity * loadFactor) {
                 resize(capacity * 2);
             }
 
@@ -152,8 +147,7 @@ public class HashSet<T> implements Iterable<T> {
 
         Object[] oldEntries = new Object[size];
         int k = 0;
-        for (int i = 0; i < entries.length && k < size; ++i)
-        {
+        for (int i = 0; i < entries.length && k < size; ++i) {
             if (entries[i] != null && !isDeleted[i]) {
                 oldEntries[k++] = entries[i];
             }
@@ -165,7 +159,7 @@ public class HashSet<T> implements Iterable<T> {
         entries = new Object[capacity];
 
         for (int i = 0; i < oldEntries.length; ++i) {
-            //@SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
             T item = ((Node<T>)oldEntries[i]).key;
             add(item);
         }
