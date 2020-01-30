@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class HashSet<T> implements Iterable<T> {
+public class HashSet<T> implements IHashSet<T>, Iterable<T> {
     static class Node<T> {
         final T key;
 
