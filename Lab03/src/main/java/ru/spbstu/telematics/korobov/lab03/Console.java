@@ -3,7 +3,6 @@ package ru.spbstu.telematics.korobov.lab03;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicIntegerArray;
 
 public class Console {
     private final Semaphore binarySemaphore;
