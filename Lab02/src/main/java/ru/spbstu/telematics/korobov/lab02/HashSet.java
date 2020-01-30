@@ -1,5 +1,6 @@
 package ru.spbstu.telematics.korobov.lab02;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class HashSet<T> implements Set<T>, Iterable<T> {
@@ -203,10 +204,24 @@ public class HashSet<T> implements Set<T>, Iterable<T> {
     }
 
     @Override
-    public <T1> T1[] toArray(T1[] a) {
-        List<T> list = new ArrayList<>(size());
-        list.addAll(this);
-        return list.toArray(a);
+    public <T1> T1[] toArray(T1[] array) {
+        int size = size();
+        if (array.length < size) {
+            // If array is too small, allocate the new one with the same component type
+            array = (T1[])Array.newInstance(array.getClass().getComponentType(), size);
+        } else if (array.length > size) {
+            // If array is to large, set the first unassigned element to null
+            array[size] = null;
+        }
+
+        int i = 0;
+        for (T e: this) {
+            // No need for checked cast - ArrayStoreException will be thrown
+            // if types are incompatible, just as required
+            array[i] = (T1) e;
+            i++;
+        }
+        return array;
     }
 
     private boolean resize(int newSize) {
