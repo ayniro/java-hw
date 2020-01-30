@@ -5,8 +5,8 @@ public class App
 {
     public static void main( String[] args )
     {
-        int totalTries = 200000000;
-        int[] threadsCountArray = {1, 2, 4, 8, 16, 32, 64, 128, 1024, 4096};
+        int totalTries = 2000000;
+        int[] threadsCountArray = {1};//, 2, 4, 8, 16, 32, 64, 128, 1024, 4096};
 
         for (int threadsCount : threadsCountArray) {
 
