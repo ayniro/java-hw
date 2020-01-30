@@ -21,6 +21,9 @@ public class OperatingSystem {
         }
         Thread systemProcessThread = new Thread(systemProcess, "System thread");
         systemProcessThread.run();
+    }
+
+    public void shutdown() {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

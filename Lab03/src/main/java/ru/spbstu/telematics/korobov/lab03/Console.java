@@ -9,14 +9,14 @@ public class Console {
     private final Semaphore binarySemaphore;
     private final Queue<UserTask> taskQueue;
     private int activeUsers;
-    private AtomicIntegerArray usersFinishedTasksCounter;
+    private int[] usersFinishedTasksCounter;
     private boolean[] usersSubmittedAllTasks;
 
     public Console(int activeUsers) {
         binarySemaphore = new Semaphore(1);
         taskQueue = new ArrayDeque<UserTask>();
         this.activeUsers = activeUsers;
-        usersFinishedTasksCounter = new AtomicIntegerArray(activeUsers);
+        usersFinishedTasksCounter = new int[activeUsers];
         usersSubmittedAllTasks = new boolean[activeUsers];
     }
 
@@ -49,7 +49,8 @@ public class Console {
             binarySemaphore.acquire();
 
             usersSubmittedAllTasks[user.getId()] = user.submitTask();
-            user.addFinishedTasks(usersFinishedTasksCounter.getAndSet(user.getId(), 0));
+            user.addFinishedTasks(usersFinishedTasksCounter[user.getId()]);
+            usersFinishedTasksCounter[user.getId()] = 0;
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -62,7 +63,7 @@ public class Console {
     }
 
     public void addCompletedUserTask(int userId) {
-        usersFinishedTasksCounter.getAndIncrement(userId);
+        usersFinishedTasksCounter[userId]++;
     }
 
     public int getActiveUsers() {

@@ -9,8 +9,9 @@ public class SystemTest
 {
     @Test
     public void systemTest() {
-        OperatingSystem operatingSystem = new OperatingSystem(100);
+        OperatingSystem operatingSystem = new OperatingSystem(400);
         operatingSystem.start();
+        operatingSystem.shutdown();
 
         Console console = operatingSystem.getConsole();
         boolean[] usersSubmittedAllTasks = console.getUsersSubmittedAllTasks();
