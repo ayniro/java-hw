@@ -1,8 +1,18 @@
 package ru.spbstu.telematics.korobov.lab02;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class HashSet<T> implements Iterable<T> {
+    static class Node<T> {
+        final T key;
+
+        Node(T key) {
+            this.key = key;
+        }
+    }
+
     private static final float DEFAULT_LOAD_FACTOR = 0.5f;
     private static final int DEFAULT_INITIAL_SIZE = 32;
 
@@ -17,7 +27,13 @@ public class HashSet<T> implements Iterable<T> {
     }
 
     public HashSet(int capacity) {
-        this.capacity = ceilPowerOf2(capacity);
+        if (capacity > 0) {
+            this.capacity = ceilPowerOf2(capacity);
+            entries = new Object[this.capacity];
+            isDeleted = new boolean[this.capacity];
+        } else {
+            throw new IllegalArgumentException("Capacity should be > 0");
+        }
     }
 
     public int size() {
@@ -26,15 +42,16 @@ public class HashSet<T> implements Iterable<T> {
 
     public boolean contains(T item) {
         int iteration = 0;
-        int keyHashCode = item.hashCode();
+        int keyHashCode = Objects.hashCode(item);
         int hashIndex = getElementIndex(keyHashCode, iteration++);
 
         while (isDeleted[hashIndex] || entries[hashIndex] != null)
         {
             if (entries[hashIndex] != null)
             {
-                if (entries[hashIndex].equals(item)) {
-                    return true;
+                Node<?> currNode = (Node<?>)entries[hashIndex];
+                if (Objects.equals(currNode.key, item)) {
+                    return !isDeleted[hashIndex];
                 }
             }
             hashIndex = getElementIndex(keyHashCode, iteration++);
@@ -44,12 +61,11 @@ public class HashSet<T> implements Iterable<T> {
     }
 
     public boolean add(T item) {
-        if (item == null) throw new NullPointerException("HashSet: add(T item), item can't be null");
         int iteration = 0;
-        int keyHashCode = item.hashCode();
+        int keyHashCode = Objects.hashCode(item);
         int hashIndex = getElementIndex(keyHashCode, iteration++);
 
-        while (!isDeleted[hashIndex] && entries[hashIndex] != null && !entries[hashIndex].equals(item))
+        while (!isDeleted[hashIndex] && entries[hashIndex] != null && !Objects.equals(((Node<?>)entries[hashIndex]).key, item))
         {
             hashIndex = getElementIndex(keyHashCode, iteration++);
         }
@@ -57,11 +73,14 @@ public class HashSet<T> implements Iterable<T> {
         if (isDeleted[hashIndex] || entries[hashIndex] == null)
         {
             size++;
-            entries[hashIndex] = item;
+            entries[hashIndex] = new Node<T>(item);
+            isDeleted[hashIndex] = false;
+
             if (size > capacity * loadFactor)
             {
                 resize(capacity * 2);
             }
+
             return true;
         }
 
@@ -69,59 +88,61 @@ public class HashSet<T> implements Iterable<T> {
     }
 
     public boolean remove(T item) {
-        return false;
-        /*
         int iteration = 0;
-        int keyHashCode = key.GetHashCode();
-        int hashIndex = GetIndex(keyHashCode, iteration++);
-        var returnValue = default(TValue);
+        int keyHashCode = Objects.hashCode(item);
+        int hashIndex = getElementIndex(keyHashCode, iteration++);
 
-        while (_isDeleted[hashIndex] || _entries[hashIndex] != null)
-        {
-            if (_entries[hashIndex] != null)
-            {
-                if (_comparer(_entries[hashIndex].Key, key))
-                {
-                    Size--;
-                    returnValue = _entries[hashIndex].Value;
-                    RemoveEntryFromList(_entries[hashIndex]);
-                    _isDeleted[hashIndex] = true;
+        while (isDeleted[hashIndex] || entries[hashIndex] != null) {
+            if (entries[hashIndex] != null) {
+                Node<?> currNode = (Node<?>)entries[hashIndex];
+                if (Objects.equals(currNode.key, item)) {
+                    size--;
+                    isDeleted[hashIndex] = true;
 
-                    var args = new ElementRemovedEventArgs<KeyValueEntry<TKey, TValue>>
-                    {
-                        CollectionName = this.GetType().Name,
-                                Data = _entries[hashIndex]
-                    };
-                    _entries[hashIndex] = null;
-                    OnElementDeleted(args);
-
-                    if (Size < Capacity * MaxLoadFactor * MaxLoadFactor)
-                    {
-                        Resize(Capacity / 2);
+                    if (size < capacity * loadFactor * loadFactor) {
+                        resize(capacity / 2);
                     }
 
-                    return returnValue;
+                    return true;
                 }
             }
-
-            hashIndex = GetIndex(keyHashCode, iteration++);
+            hashIndex = getElementIndex(keyHashCode, iteration++);
         }
 
-        return returnValue;
-        */
+        return false;
     }
 
     public boolean isEmpty() {
         return size == 0;
     }
 
-    public boolean clear() {
-        throw new UnsupportedOperationException("Not Implemented");
+    public void clear() {
+        size = 0;
+        capacity = DEFAULT_INITIAL_SIZE;
+        Arrays.fill(entries, null);
+        Arrays.fill(isDeleted, false);
     }
 
-    @Override
     public Iterator<T> iterator() {
-        return null;
+        return new Iterator<T>() {
+            private int iteratedElements = 0;
+            private int currElement = 0;
+            @Override
+            public boolean hasNext() {
+                return iteratedElements < size;
+            }
+
+            @Override
+            public T next() {
+                while (entries[currElement] == null || isDeleted[currElement]) {
+                    currElement++;
+                }
+                iteratedElements++;
+                @SuppressWarnings("unchecked")
+                T returnValue = ((Node<T>)(entries[currElement])).key;
+                return returnValue;
+            }
+        };
     }
 
     private boolean resize(int newSize) {
@@ -130,9 +151,10 @@ public class HashSet<T> implements Iterable<T> {
         }
 
         Object[] oldEntries = new Object[size];
-        for (int i = 0, k = 0; i < entries.length; ++i)
+        int k = 0;
+        for (int i = 0; i < entries.length && k < size; ++i)
         {
-            if (entries[i] != null) {
+            if (entries[i] != null && !isDeleted[i]) {
                 oldEntries[k++] = entries[i];
             }
         }
@@ -142,9 +164,9 @@ public class HashSet<T> implements Iterable<T> {
         isDeleted = new boolean[capacity];
         entries = new Object[capacity];
 
-        for (Object oldEntry : oldEntries) {
-            @SuppressWarnings("unchecked")
-            T item = (T) oldEntry;
+        for (int i = 0; i < oldEntries.length; ++i) {
+            //@SuppressWarnings("unchecked")
+            T item = ((Node<T>)oldEntries[i]).key;
             add(item);
         }
 
