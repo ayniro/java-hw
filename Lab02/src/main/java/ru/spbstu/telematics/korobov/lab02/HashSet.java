@@ -1,10 +1,8 @@
 package ru.spbstu.telematics.korobov.lab02;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
-public class HashSet<T> implements IHashSet<T>, Iterable<T> {
+public class HashSet<T> implements Set<T>, Iterable<T> {
     static class Node<T> {
         final T key;
 
@@ -40,7 +38,7 @@ public class HashSet<T> implements IHashSet<T>, Iterable<T> {
         return size;
     }
 
-    public boolean contains(T item) {
+    public boolean contains(Object item) {
         int iteration = 0;
         int keyHashCode = Objects.hashCode(item);
         int hashIndex = getElementIndex(keyHashCode, iteration++);
@@ -82,7 +80,7 @@ public class HashSet<T> implements IHashSet<T>, Iterable<T> {
         return false;
     }
 
-    public boolean remove(T item) {
+    public boolean remove(Object item) {
         int iteration = 0;
         int keyHashCode = Objects.hashCode(item);
         int hashIndex = getElementIndex(keyHashCode, iteration++);
@@ -105,6 +103,58 @@ public class HashSet<T> implements IHashSet<T>, Iterable<T> {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        boolean changed = false;
+        for (T o : c) {
+            if (add(o)) {
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        boolean changed = false;
+        for (int i = 0; i < capacity; ++i) {
+            if (entries[i] != null && !isDeleted[i]) {
+                if (!c.contains(((Node<?>)(entries[i])).key)) {
+                    isDeleted[i] = true;
+                    size--;
+                    changed = true;
+                }
+            }
+        }
+
+        if (size < capacity * loadFactor * loadFactor) {
+            resize(capacity / 2);
+        }
+
+        return changed;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        boolean changed = false;
+        for (Object o : c) {
+            if (remove(o)) {
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     public boolean isEmpty() {
@@ -140,11 +190,8 @@ public class HashSet<T> implements IHashSet<T>, Iterable<T> {
         };
     }
 
-    private boolean resize(int newSize) {
-        if (newSize < size) {
-            return false;
-        }
-
+    @Override
+    public Object[] toArray() {
         Object[] oldEntries = new Object[size];
         int k = 0;
         for (int i = 0; i < entries.length && k < size; ++i) {
@@ -152,6 +199,22 @@ public class HashSet<T> implements IHashSet<T>, Iterable<T> {
                 oldEntries[k++] = entries[i];
             }
         }
+        return oldEntries;
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        List<T> list = new ArrayList<>(size());
+        list.addAll(this);
+        return list.toArray(a);
+    }
+
+    private boolean resize(int newSize) {
+        if (newSize < size) {
+            return false;
+        }
+
+        Object[] oldEntries = toArray();
 
         capacity = ceilPowerOf2(newSize);
         size = 0;

@@ -44,7 +44,8 @@ public class App
                 hashSet.add(new IntPair(i, j));
             }
         }
-
+        java.util.HashSet<Integer> a = new java.util.HashSet<>();
+        a.toArray(new Integer[2]);
         for (int i = 0; i < 10; ++i) {
             for (int j = 0; j < 10; ++j) {
                 if (!hashSet.contains(new IntPair(i, j))) {
