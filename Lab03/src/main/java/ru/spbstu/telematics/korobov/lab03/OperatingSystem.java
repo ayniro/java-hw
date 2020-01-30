@@ -24,11 +24,30 @@ public class OperatingSystem {
     }
 
     public void shutdown() {
+        while (true) {
+            boolean finished = true;
+            for (int i = 0; i < numberOfUsers; ++i) {
+                if (users[i].getInitialTasksCount() != users[i].getFinishedTasksCount()) {
+                    finished = false;
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+            if (finished) {
+                return;
+            }
+        }
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        */
     }
 
     public User[] getUsers() {
